@@ -1,0 +1,220 @@
+<template>
+    <lightning-card title="App de Pedidos Custom" icon-name="standard:orders">
+        <div class="app-container">
+
+            <div class="progress">
+                <div class={customerStepClass}>Cliente</div>
+                <div class={productsStepClass}>Produtos</div>
+                <div class={cartStepClass}>Carrinho</div>
+                <div class={summaryStepClass}>Resumo</div>
+                <div class={confirmationStepClass}>Confirmação</div>
+            </div>
+
+            <div class="step-container">
+
+                <template if:true={isStepCustomer}>
+                    <section class="step-content">
+                        <h2>Selecionar Cliente</h2>
+                        <p>Escolha a conta que receberá o pedido.</p>
+
+                        <lightning-record-picker
+                            label="Cliente"
+                            placeholder="Digite o nome do cliente"
+                            object-api-name="Account"
+                            value={selectedAccountId}
+                            onchange={handleAccountChange}
+                            required>
+                        </lightning-record-picker>
+                    </section>
+                </template>
+
+                <template if:true={isStepProducts}>
+                    <section class="step-content">
+                        <h2>Selecionar Produtos</h2>
+                        <p>Produtos carregados conforme a tabela de preço da conta selecionada.</p>
+
+                        <div class="cart-indicator">
+                            Itens no carrinho: {cartCount}
+                        </div>
+
+                        <template if:true={isLoading}>
+                            <lightning-spinner alternative-text="Carregando produtos"></lightning-spinner>
+                        </template>
+
+                        <template if:false={isLoading}>
+                            <div class="product-grid">
+                                <template for:each={productsWithFormattedValues} for:item="product">
+                                    <div key={product.id} class="product-card">
+                                        <h3>{product.productName}</h3>
+
+                                        <p class="price">{product.formattedPrice}</p>
+                                        <p class="small-text">Múltiplo: {product.multipleQuantity}</p>
+
+                                        <lightning-input
+                                            type="number"
+                                            label="Quantidade"
+                                            value={product.quantity}
+                                            min={product.multipleQuantity}
+                                            step={product.multipleQuantity}
+                                            data-id={product.id}
+                                            onchange={handleProductQuantityChange}>
+                                        </lightning-input>
+
+                                        <p class="subtotal">
+                                            Subtotal: {product.formattedSubtotal}
+                                        </p>
+
+                                        <lightning-button
+                                            label="Adicionar"
+                                            variant="brand"
+                                            data-id={product.id}
+                                            onclick={handleAddToCart}>
+                                        </lightning-button>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </section>
+                </template>
+
+                <template if:true={isStepCart}>
+                    <section class="step-content">
+                        <h2>Carrinho</h2>
+                        <p>Revise os produtos adicionados ao pedido.</p>
+
+                        <template if:true={cartCount}>
+                            <div class="cart-list">
+                                <template for:each={cart} for:item="item">
+                                    <div key={item.id} class="cart-item">
+                                        <div>
+                                            <strong>{item.productName}</strong>
+                                            <p>{item.quantity} x {item.formattedPrice}</p>
+                                        </div>
+
+                                        <div>
+                                            <strong>{item.formattedSubtotal}</strong>
+
+                                            <lightning-button-icon
+                                                icon-name="utility:delete"
+                                                alternative-text="Remover"
+                                                title="Remover"
+                                                data-id={item.id}
+                                                onclick={handleRemoveFromCart}>
+                                            </lightning-button-icon>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div class="totals-box">
+                                <lightning-input
+                                    type="number"
+                                    label="Desconto geral (%)"
+                                    value={discountPercent}
+                                    min="0"
+                                    max="70"
+                                    onchange={handleDiscountChange}>
+                                </lightning-input>
+
+                                <p>Subtotal: <strong>{formattedSubtotal}</strong></p>
+                                <p>Desconto: <strong>{formattedDiscountAmount}</strong></p>
+                                <p class="total-final">
+                                    Total final: <strong>{formattedTotalAmount}</strong>
+                                </p>
+                            </div>
+                        </template>
+
+                        <template if:false={cartCount}>
+                            <div class="empty-box">
+                                Nenhum produto adicionado ainda.
+                            </div>
+                        </template>
+                    </section>
+                </template>
+
+                <template if:true={isStepSummary}>
+                    <section class="step-content">
+                        <h2>Resumo do Pedido</h2>
+                        <p>Confira as informações antes de criar o pedido.</p>
+
+                        <div class="totals-box">
+                            <p>Itens no carrinho: <strong>{cartCount}</strong></p>
+                            <p>Subtotal: <strong>{formattedSubtotal}</strong></p>
+                            <p>Desconto: <strong>{formattedDiscountAmount}</strong></p>
+                            <p class="total-final">
+                                Total final: <strong>{formattedTotalAmount}</strong>
+                            </p>
+                        </div>
+
+                        <lightning-combobox
+                            label="Condição de Pagamento"
+                            value={paymentCondition}
+                            options={orderPaymentConditionOptions}
+                            onchange={handlePaymentConditionChange}
+                            required>
+                        </lightning-combobox>
+                    </section>
+                </template>
+
+                <template if:true={isStepConfirmation}>
+                <section class="step-content success celebration-stage">
+
+                    <template if:true={showCelebration}>
+                        <div class="fireworks">
+                            <span class="firework fw1"></span>
+                            <span class="firework fw2"></span>
+                            <span class="firework fw3"></span>
+                            <span class="firework fw4"></span>
+                        </div>
+                    </template>
+
+                    <div class="success-card">
+                        <div class="success-icon">✓</div>
+
+                        <h2>Pedido criado com sucesso! 🎉</h2>
+                        <p>O pedido foi gerado na organização Salesforce.</p>
+
+                        <template if:true={createdOrderId}>
+                            <div class="order-box">
+                                <span>Número do Pedido</span>
+                                <strong>{createdOrderId}</strong>
+                            </div>
+                        </template>
+
+                        <lightning-button
+                            label="Criar novo pedido"
+                            variant="brand"
+                            onclick={handleNewOrder}>
+                        </lightning-button>
+                    </div>
+                </section>
+            </template>
+
+            </div>
+
+            <template if:true={errorMessage}>
+                <div class="error-message">
+                    {errorMessage}
+                </div>
+            </template>
+
+            <div class="footer">
+                <template if:true={showBackButton}>
+                    <lightning-button
+                        label="Voltar"
+                        onclick={handleBack}>
+                    </lightning-button>
+                </template>
+
+                <template if:true={showNextButton}>
+                    <lightning-button
+                        label={nextButtonLabel}
+                        variant="brand"
+                        onclick={handleNext}>
+                    </lightning-button>
+                </template>
+            </div>
+
+        </div>
+    </lightning-card>
+</template>

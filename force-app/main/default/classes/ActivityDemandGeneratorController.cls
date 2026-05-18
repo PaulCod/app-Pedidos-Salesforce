@@ -3,7 +3,7 @@ public with sharing class ActivityDemandGeneratorController {
 
     }
 
-    @AuraEnabled(cachable=true)
+    @AuraEnabled(cacheable=true)
     public static List<Account> searchAccounts(String searchTerm) {
         String term = '%' + String.escapeSingleQuotes(searchTerm) + '%';
 
@@ -19,19 +19,23 @@ public with sharing class ActivityDemandGeneratorController {
 
     @AuraEnabled
     public static void saveGenerators(
-        Id taskId;
+        Id taskId,
 
         Id arquiteturaId,
+        String arquiteturaName,
 
-        Id EngenhariaId
+        Id engenhariaId,
+        String engenhariaName
     ) {
         
         Task t = new Task(
             Id = taskId,
 
             Account_ID_1__c = arquiteturaId,
+            Account_1_Name__c = arquiteturaName,
 
-            Account_ID_2__c = EngenhariaId
+            Account_ID_2__c = engenhariaId,
+            Account_2_Name__c = engenhariaName
         );
 
         update t;

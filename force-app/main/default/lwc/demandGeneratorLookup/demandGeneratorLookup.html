@@ -21,7 +21,7 @@
                     <button
                         class="slds-button slds-button_icon slds-pill__remove"
                         title="Remover"
-                        onclick={handlerClear}>
+                        onclick={handleClear}>
                         <lightning-icon
                             icon-name="utility:close"
                             size="x-small">
@@ -39,7 +39,7 @@
                 onchange={handleSearchChange}>
             </lightning-input>
 
-            <template if:true={hasResult}>
+            <template if:true={hasResults}>
                 <div class="slds-box slds-m-top_x-small lookup-results">
                     <template for:each={results} for:item="account">
                         <div
@@ -53,7 +53,7 @@
                                 class="slds-m-right_x-small">
 
                             </lightning-icon>
-                            {account.Id}
+                            {account.Name}
                         </div>
                     </template>
                 </div>

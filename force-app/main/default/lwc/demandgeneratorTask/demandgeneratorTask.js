@@ -5,14 +5,18 @@ import saveGenerators from '@salesforce/apex/ActivityDemandGeneratorController.s
 
 const FIELDS = [
     'Task.Account_ID_1__c',
-    'Task.Account_ID_2__c'
+    'Task.Account_ID_2__c',
+    'Task.Account_1_Name__c',
+    'Task.Account_2_Name__c'
 ];
 
 export default class DemandgeneratorTask extends LightningElement {
     @api recordId;
 
     arquiteturaId;
+    arquiteturaName;
     engenhariaId;
+    engenhariaName;
 
     isLoading = false;
 
@@ -20,7 +24,10 @@ export default class DemandgeneratorTask extends LightningElement {
     wiredTask({data, error}) {
         if(data){
             this.arquiteturaId = data.fields.Account_ID_1__c?.value;
-            this.arquiteturaId = data.fields.Account_ID_2__c?.value;
+            this.engenhariaId = data.fields.Account_ID_2__c?.value;
+            this.arquiteturaName = data.fields.Account_1_Name__c?.value;
+            this.engenhariaName = data.fields.Account_2_Name__c?.value;
+
         } else if(error) {
             this.showToast('Erro', 'Erro ao carregar dados da Task.', "error");
         }
@@ -28,10 +35,12 @@ export default class DemandgeneratorTask extends LightningElement {
 
     handleArquiteturaSelect(event) {
         this.arquiteturaId = event.detail.id;
+        this.arquiteturaName = event.detail.name;
     }
 
     handleEngenhariaSelect(event) {
         this.engenhariaId = event.detail.id;
+        this.engenhariaName = event.detail.name;
     }
 
     async handleSave() {
@@ -54,11 +63,11 @@ export default class DemandgeneratorTask extends LightningElement {
 
     showToast(title, message, variant) {
         this.dispatchEvent(
-            new ShowToastEvent(
+            new ShowToastEvent({
                 title,
                 message,
                 variant
-            )
+            })
         )
     }
 

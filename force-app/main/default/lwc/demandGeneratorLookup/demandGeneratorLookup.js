@@ -4,13 +4,14 @@ import searchAccounts from '@salesforce/apex/ActivityDemandGeneratorController.s
 export default class DemandGeneratorLookup extends LightningElement {
     @api label;
     @api selectedId;
+    @api selectedName;
 
     searchTerm = '';
     results = [];
     searchTimeout;
 
     get hasSelection() {
-        return this.selectedId
+        return this.selectedId && this.selectedName;
     }
 
     get hasResults() {

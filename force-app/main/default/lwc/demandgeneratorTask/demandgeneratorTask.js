@@ -50,7 +50,9 @@ export default class DemandgeneratorTask extends LightningElement {
             await saveGenerators({
                 taskId: this.recordId,
                 arquiteturaId: this.arquiteturaId,
-                engenhariaId: this.engenhariaId
+                arquiteturaName: this.arquiteturaName,
+                engenhariaId: this.engenhariaId,
+                engenhariaName: this.engenhariaName
             })
 
             this.showToast('Sucesso', 'Geradores de demanda salvos com sucesso', 'success')

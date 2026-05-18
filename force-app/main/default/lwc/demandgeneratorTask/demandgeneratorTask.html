@@ -1,32 +1,40 @@
 <template>
     <lightning-card title="Geradores de Demanda" icon-name="standard:account">
-        <div class="slds-p-around_medium">
+        <div class="slds-p-around_medium demand-container">
 
             <template if:true={isLoading}>
                 <lightning-spinner size="small"></lightning-spinner>
             </template>
 
-            <c-demand-generator-lookup
-                label="Arquitetura"
-                selected-id={arquiteturaId}
-                selected-name={arquiteturaName}
-                onselectrecord={handleArquiteturaSelect}>
-            </c-demand-generator-lookup>
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                <div class="slds-col slds-size_1-of-1 demand-field">
+                    <c-demand-generator-lookup
+                        label="Arquitetura"
+                        selected-id={arquiteturaId}
+                        selected-name={arquiteturaName}
+                        onselectrecord={handleArquiteturaSelect}>
+                    </c-demand-generator-lookup>
+                </div>
 
-            <c-demand-generator-lookup
-                label="Engenharia"
-                selected-id={engenhariaId}
-                selected-name={engenhariaName}
-                onselectrecord={handleEngenhariaSelect}>
-            </c-demand-generator-lookup>
+                <div class="slds-col slds-size_1-of-1 demand-field">
+                    <c-demand-generator-lookup
+                        label="Engenharia"
+                        selected-id={engenhariaId}
+                        selected-name={engenhariaName}
+                        onselectrecord={handleEngenhariaSelect}>
+                    </c-demand-generator-lookup>
+                </div>
+            </div>
 
-            <div class="slds-m-top_medium">
+            <div class="slds-m-top_medium slds-text-align_right">
                 <lightning-button
                     label="Salvar"
                     variant="brand"
-                    onclick={handleSave}>
+                    onclick={handleSave}
+                    disabled={isLoading}>
                 </lightning-button>
             </div>
+
         </div>
     </lightning-card>
 </template>

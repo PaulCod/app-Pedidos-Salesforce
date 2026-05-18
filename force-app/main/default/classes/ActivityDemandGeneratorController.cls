@@ -5,7 +5,11 @@ public with sharing class ActivityDemandGeneratorController {
 
     @AuraEnabled(cacheable=true)
     public static List<Account> searchAccounts(String searchTerm) {
-        String term = '%' + String.escapeSingleQuotes(searchTerm) + '%';
+        if (String.isBlank(searchTerm) || searchTerm.trim().length() < 2) {
+            return new List<Account>();
+        }
+
+        String term = '%' + String.escapeSingleQuotes(searchTerm.trim()) + '%';
 
         return [
             SELECT Id, Name
@@ -13,7 +17,7 @@ public with sharing class ActivityDemandGeneratorController {
             WHERE RecordType.DeveloperName = 'DemandGenerator'
             AND Name LIKE :term
             ORDER BY Name
-            Limit 10
+            LIMIT 25
         ];
     }
 

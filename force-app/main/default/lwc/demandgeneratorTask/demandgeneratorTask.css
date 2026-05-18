@@ -1,0 +1,13 @@
+.demand-container {
+    position: relative;
+}
+
+.demand-field {
+    margin-bottom: 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .demand-field {
+        margin-bottom: 1rem;
+    }
+}

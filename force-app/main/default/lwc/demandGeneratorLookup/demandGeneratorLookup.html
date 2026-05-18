@@ -1,0 +1,63 @@
+<template>
+    <div class="slds-form-element slds-m-bottom_medium">
+        <label class="slds-form-element__label">{label}</label>
+
+        <template if:true={hasSelection}>
+            <div class="slds-pill_container">
+                <span class="slds-pill slds-pill_link">
+                    <a 
+                        href={accountUrl}
+                        target="_blank"
+                        class="slds-pill__action"
+                        title={selectedName}>
+                        <lightning-icon
+                            icon-name="standard:account"
+                            size="x-small"
+                            class="slds-m-right_x-small">
+                        </lightning-icon>
+                        <span>{selectedName}</span>
+                    </a>
+
+                    <button
+                        class="slds-button slds-button_icon slds-pill__remove"
+                        title="Remover"
+                        onclick={handlerClear}>
+                        <lightning-icon
+                            icon-name="utility:close"
+                            size="x-small">
+                        </lightning-icon>
+                    </button>
+                </span>
+            </div>
+        </template>
+        
+        <template if:false={hasSelection}>
+            <lightning-input
+                type="search"
+                placeholder="Pesquisar gerador de demanda.."
+                value={searchTerm}
+                onchange={handleSearchChange}>
+            </lightning-input>
+
+            <template if:true={hasResult}>
+                <div class="slds-box slds-m-top_x-small lookup-results">
+                    <template for:each={results} for:item="account">
+                        <div
+                            key={account.Id}
+                            class="slds-p-around_x-small lookup-item"
+                            data-id={account.Id}
+                            onclick={handleSelect}>
+                            <lightning-icon 
+                                icon-name="standard:account"
+                                size="x-small"
+                                class="slds-m-right_x-small">
+
+                            </lightning-icon>
+                            {account.Id}
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </template>
+    </div>
+</template>
